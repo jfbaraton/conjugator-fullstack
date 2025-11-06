@@ -1,0 +1,16 @@
+{
+  "name": "conjugator-fullstack",
+  "version": "1.0.0",
+  "description": "This project contains both a nodejs backend and a React frontend first install and run the backend:",
+  "main": "index.js",
+  "scripts": {
+    "start" : "pm2 start ecosystem.config.js",
+    "stop" : "pm2 stop all"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pm2": "^6.0.13"
+  }
+}
