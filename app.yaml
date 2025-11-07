@@ -1,3 +1,7 @@
 runtime: nodejs20
 instance_class: F1
 env: standard
+network:
+  forwarded_ports:
+    - 3000/tcp
+    -
