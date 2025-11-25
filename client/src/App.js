@@ -1,10 +1,42 @@
 import logo from './logo.svg';
 import api from './services/api';
 import './App.css';
-import {useState} from "react";
+import "./index.css";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 function App() {
-    const [textFromApi, setTextFromApi] = useState("NOT CALLED YET")
+    let correctAnswer = "j'aime";
+    const [textFromApi, setTextFromApi] = useState(correctAnswer);
+    const [submittedAnswer, setSubmittedAnswer] = useState(""); // last submitted value
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        formState: { errors },
+    } = useForm();
+
+    const currentInput = watch("answer");
+
+    // Clear messages only if user starts typing a new answer
+    if (submittedAnswer && currentInput !== submittedAnswer) {
+        setSubmittedAnswer("");
+    }
+
+    // Called on valid submission
+    const onValid = (data) => {
+        console.log("User submitted (correct):", data.answer);
+        setSubmittedAnswer(data.answer);
+    };
+
+    // Called on invalid submission
+    const onInvalid = () => {
+        console.log("User submitted (invalid):", currentInput);
+        setSubmittedAnswer(currentInput);
+    };
+
+    // API call
     const onbuttonClick = () => {
         api.get('/about')
             .then(response => {
@@ -14,27 +46,36 @@ function App() {
             .catch(error => {
                 console.error('Error during health check:', error);
             });
-    }
+    };
+
     return (
         <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>
-              Edit <code>src/App.js</code> and save to reload.
-            </p>
-            <p>
-              read from API: {textFromApi}
-            </p>
-              <button onClick={onbuttonClick} >Click ME</button>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-          </header>
+            <header className="App-header">
+                <img src={logo} className="App-logo" alt="logo" />
+
+                <form onSubmit={handleSubmit(onValid, onInvalid)}>
+                    <label>Aimer 1st singular</label>
+                    <input
+                        {...register("answer", {
+                            required: "This field is required",
+                            validate: value =>
+                                value === textFromApi
+                        })}
+                    />
+
+                    {/* Show error AFTER submit */}
+                    {submittedAnswer && errors.answer && (
+                        <p style={{ color: "red" }}>Wrong answer</p>
+                    )}
+
+                    {/* Show "Correct!" only AFTER submit */}
+                    {submittedAnswer && submittedAnswer === textFromApi && (
+                        <p style={{ color: "lime" }}>Correct!</p>
+                    )}
+
+                    <button type="submit">Submit for correction</button>
+                </form>
+            </header>
         </div>
     );
 }
